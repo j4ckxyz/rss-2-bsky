@@ -1,5 +1,3 @@
-const functions = require("@google-cloud/functions-framework");
-
 const { BskyAgent, AppBskyFeedPost } = require("@atproto/api");
 const cheerio = require("cheerio");
 const sharp = require("sharp");
@@ -9,19 +7,9 @@ const parser = new Parser();
 
 const settings = [
   {
-    account: "bbcnews-uk-rss.bsky.social",
+    account: "jglypt.net",
     password: "xxxx-xxxx-xxxx-xxxx",
-    url: "https://feeds.bbci.co.uk/news/uk/rss.xml#",
-  },
-  {
-    account: "bbcnews-world-rss.bsky.social",
-    password: "xxxx-xxxx-xxxx-xxxx",
-    url: "https://feeds.bbci.co.uk/news/world/rss.xml#",
-  },
-  {
-    account: "apnews-world-rss.bsky.social",
-    password: "xxxx-xxxx-xxxx-xxxx",
-    url: "https://rsshub.app/apnews/topics/world-news",
+    url: "https://example.com/feeds/rss",
   },
 ];
 
@@ -88,7 +76,7 @@ async function post(agent, item) {
   const res = AppBskyFeedPost.validateRecord(post);
   if (res.success) {
     console.log(post);
-    // await agent.post(post);
+     await agent.post(post);
   } else {
     console.log(res.error);
   }
@@ -111,7 +99,9 @@ async function main(setting) {
     });
     cursor = response.cursor;
     for (const feed of response.data.feed) {
-      processed.add(feed.post.record.embed.external.uri);
+      if (feed.post.record.embed?.external) {
+          processed.add(feed.post.record.embed.external.uri);
+      }
       processed.add(feed.post.record.text);
     }
   }
@@ -123,18 +113,11 @@ async function main(setting) {
     }
   }
 }
-// async function entrypoint() {
-//   for (const setting of settings) {
-//     console.log("process " + setting.url);
-//     await main(setting);
-//   }
-//   console.log("--- finish ---");
-// }
-// entrypoint();
-functions.cloudEvent("entrypoint", async (_) => {
-  for (const setting of settings) {
-    console.log("process " + setting.url);
-    await main(setting);
-  }
-  console.log("--- finish ---");
-});
+ async function entrypoint() {
+   for (const setting of settings) {
+     console.log("process " + setting.url);
+     await main(setting);
+   }
+   console.log("--- finish ---");
+ }
+ entrypoint();
