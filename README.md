@@ -1,3 +1,6 @@
+# Help
+Thanks [Kuba](https://mackuba.eu/) for helping with embedding links if there are none (it failed previously)
+
 # Introduction
 
 I used to use Twitter as a news reader. It offered a great user experience as it made it easy to discuss news with friends. Now, I want to introduce this user experience in Bluesky.
